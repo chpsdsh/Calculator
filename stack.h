@@ -17,13 +17,22 @@ STACK* create(){
     return Telem;
 }
 
-void push(STACK *S, STACK *elem){
+void push(STACK *S, char value){
     STACK *first = S->next;
+    STACK *elem;
+    elem = (STACK*)malloc(sizeof(STACK));
+    elem->value = value;
     elem->next = first;
     S->next = elem;
 }
 
-
+void print(STACK *S){
+    STACK *ptr = S-> next;
+    while (ptr != NULL){
+        printf("%s\n",&ptr->value);
+        ptr = ptr->next;
+    }
+}
 
 void delete(STACK *pre){
     STACK *d = pre->next;

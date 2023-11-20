@@ -54,11 +54,13 @@ void divBy0(char *str){
 
 
 int main() {
-    STACK *cur_stack;
-    cur_stack = create();
+    STACK *cur_stack = create();
     char str[1000];
     gets(str);
     SynErr(str);
     divBy0(str);
+    for(int i = 0; i < 5; i++)
+        push(cur_stack,'2');
+    print(cur_stack);
     return 0;
 }
