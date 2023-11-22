@@ -29,7 +29,7 @@ void push(STACK *S, char value){
 void print(STACK *S){
     STACK *ptr = S-> next;
     while (ptr != NULL){
-        printf("%s\n",&ptr->value);
+        printf("%d\n",ptr->value);
         ptr = ptr->next;
     }
 }
@@ -48,6 +48,14 @@ int empty(STACK*S){//проверка на пустоту
     else
         return 1;
 }
-
+char pop(STACK *S){
+    STACK *first = S->next;
+    char val = first->value;
+    if(!empty(S)){
+        S->next = first->next;
+        free(first);
+        return val;
+    }
+}
 
 #endif //CALCULATOR_STACK_H
