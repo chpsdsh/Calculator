@@ -52,20 +52,6 @@ void divBy0(char *str){
     }
 }
 
-int isoper(char symb){
-    switch (symb) {
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-            return 1;
-        case ')':
-        case '(':
-            return 2;
-        default:
-            return 0;
-    }
-}
 int operand_priority(char symb){
     switch (symb) {
         case '+':
@@ -82,7 +68,20 @@ int operand_priority(char symb){
             return 0;
     }
 }
-
+int isoper(char symb){
+    switch (symb) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            return 1;
+        case ')':
+        case '(':
+            return 2;
+        default:
+            return 0;
+    }
+}
 
 char* ToPostfix(char *infix, int len){
     char *postfix;
@@ -91,6 +90,11 @@ char* ToPostfix(char *infix, int len){
     int postSize = 1;
     STACK *stack = create();
     for(int i = 0; i < strlen(infix); i++) {
+        if(isoper(infix[i])==1){
+            postfix[postfix_num++] = ' ';
+            postSize++;
+            postfix = (char*)realloc(postfix,postSize*sizeof(char));
+        }
         if(infix[i] == '(')
             push(stack,infix[i]);
         else if ((infix[i]=='+')||(infix[i]=='-')||(infix[i]=='/')||(infix[i]=='*')){
@@ -99,16 +103,24 @@ char* ToPostfix(char *infix, int len){
                 postfix[postfix_num++] = pop(stack);
                 postSize++;
                 postfix = (char*)realloc(postfix,postSize*sizeof(char));
+                postfix[postfix_num++] = ' ';
+                postSize++;
+                postfix = (char*)realloc(postfix,postSize*sizeof(char));
             }
             push(stack,infix[i]);
         }
         else if(infix[i] == ')'){
+            postfix[postfix_num++] = ' ';
+            postSize++;
+            postfix = (char*)realloc(postfix,postSize*sizeof(char));
             while(!empty(stack) && getval(stack) != '('){
                 postfix[postfix_num++] = pop(stack);
                 postSize++;
                 postfix = (char*)realloc(postfix,postSize*sizeof(char));
+
             }
             del(stack);
+
         }
         else{
             postfix[postfix_num++] = infix[i];
@@ -117,10 +129,15 @@ char* ToPostfix(char *infix, int len){
         }
 
     }
+    postfix = (char*)realloc(postfix,postSize*sizeof(char));
+    postfix[postfix_num++] = ' ';
+    postSize++;
+
     while(!empty(stack)){
         postfix[postfix_num++] = pop(stack);
         postSize++;
         postfix = (char*)realloc(postfix,postSize*sizeof(char));
+
     }
     postfix[postSize-1]='\0';
     return postfix;
@@ -132,7 +149,6 @@ int main() {
     SynErr(infix);
     divBy0(infix);
     char *postfix = ToPostfix(infix, strlen(infix));
-    printf("%s", postfix);
-
+    printf("%s\n", postfix);
     return 0;
 }
