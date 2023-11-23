@@ -83,6 +83,14 @@ int isoper(char symb){
     }
 }
 
+int spliInd(char *str, int ind){
+    int i = ind;
+    while (str[i] != ' ' && str[i] != '\0'){
+       i++;
+    }
+    return i;
+}
+
 char* ToPostfix(char *infix, int len){
     char *postfix;
     postfix = (char*)malloc(1*sizeof(char));
@@ -143,6 +151,14 @@ char* ToPostfix(char *infix, int len){
     return postfix;
 }
 
+void calculations(char *postfix){
+    long int result = 0;
+    for(int i = 0; i< strlen(postfix);i++){
+        if (postfix[i] == ' '){
+
+        }
+    }
+}
 int main() {
     char infix[1000];
     gets(infix);
