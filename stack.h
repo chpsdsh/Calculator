@@ -34,13 +34,7 @@ void print(STACK *S){
     }
 }
 
-void delete(STACK *pre){
-    STACK *d = pre->next;
-    if(d){
-        pre->next = d->next;
-        free(d);
-    }
-}
+
 
 int empty(STACK*S){//проверка на пустоту
     if(S->next)
@@ -48,6 +42,19 @@ int empty(STACK*S){//проверка на пустоту
     else
         return 1;
 }
+char getval(STACK *S){
+    STACK *frst = S->next;
+    return frst->value;
+}
+
+void del(STACK *S){
+    STACK *first = S->next;
+    if(!empty(S)) {
+        S->next = first->next;
+        free(first);
+    }
+}
+
 char pop(STACK *S){
     STACK *first = S->next;
     char val = first->value;

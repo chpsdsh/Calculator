@@ -52,7 +52,20 @@ void divBy0(char *str){
     }
 }
 
-
+int isoper(char symb){
+    switch (symb) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            return 1;
+        case ')':
+        case '(':
+            return 2;
+        default:
+            return 0;
+    }
+}
 int operand_priority(char symb){
     switch (symb) {
         case '+':
@@ -72,38 +85,44 @@ int operand_priority(char symb){
 
 
 char* ToPostfix(char *infix, int len){
-    char *postfix = (char*)malloc(sizeof(char)*len*2);
-    int postfix_num = 0, last_priority = 0;
+    char *postfix;
+    postfix = (char*)malloc(1*sizeof(char));
+    int postfix_num = 0;
+    int postSize = 1;
     STACK *stack = create();
-    for(int i = 0; i < len; i++){
-        if(isdigit(infix[i]) != 0){
-            postfix[postfix_num] = infix[i];
-            postfix_num++;
+    for(int i = 0; i < strlen(infix); i++) {
+        if(infix[i] == '(')
+            push(stack,infix[i]);
+        else if ((infix[i]=='+')||(infix[i]=='-')||(infix[i]=='/')||(infix[i]=='*')){
+            while(!empty(stack) && operand_priority(getval(stack))
+            >= operand_priority(infix[i]) && getval(stack)!='('){
+                postfix[postfix_num++] = pop(stack);
+                postSize++;
+                postfix = (char*)realloc(postfix,postSize*sizeof(char));
+            }
+            push(stack,infix[i]);
+        }
+        else if(infix[i] == ')'){
+            while(!empty(stack) && getval(stack) != '('){
+                postfix[postfix_num++] = pop(stack);
+                postSize++;
+                postfix = (char*)realloc(postfix,postSize*sizeof(char));
+            }
+            del(stack);
         }
         else{
-            postfix[postfix_num++] = ' ';
-            if(empty(stack)){
-                push(stack,infix[i]);
-                last_priority = operand_priority(infix[i]);
-
-            }
-            else if(operand_priority(infix[i]) <= last_priority){
-                postfix[postfix_num++] = pop(stack);
-                push(stack,infix[i]);
-                last_priority = operand_priority(infix[i]);
-            }
-            else{
-                push(stack,infix[i]);
-                last_priority = operand_priority(infix[i]);
-            }
-            postfix[postfix_num++] = ' ';
+            postfix[postfix_num++] = infix[i];
+            postSize++;
+            postfix = (char*)realloc(postfix,postSize*sizeof(char));
         }
+
     }
-    while (!empty(stack)){
-        postfix[postfix_num++] = ' ';
+    while(!empty(stack)){
         postfix[postfix_num++] = pop(stack);
-        postfix[postfix_num++] = ' ';
+        postSize++;
+        postfix = (char*)realloc(postfix,postSize*sizeof(char));
     }
+    postfix[postSize-1]='\0';
     return postfix;
 }
 
@@ -113,8 +132,7 @@ int main() {
     SynErr(infix);
     divBy0(infix);
     char *postfix = ToPostfix(infix, strlen(infix));
-    for(int i = 0; i < strlen(postfix); i++){
-        printf("%c", postfix[i]);
-    }
+    printf("%s", postfix);
+
     return 0;
 }
