@@ -34,8 +34,6 @@ void print(STACK *S){
     }
 }
 
-
-
 int empty(STACK*S){//проверка на пустоту
     if(S->next)
         return 0;

@@ -114,8 +114,8 @@ char *split(char *str, int ind){
 }
 
 int splitInd(char *str, int ind){
-    int i = ind;
-    while (str[i] != ' ' && str[i] != '\0'){
+    int i = ind+1;
+    while (str[i] != ' '){
         i++;
     }
     return i;
@@ -123,72 +123,63 @@ int splitInd(char *str, int ind){
 
 char* ToPostfix(char *infix){
     char *postfix;
-    postfix = (char*)malloc(1*sizeof(char));
+    postfix = (char*)malloc(strlen(infix)*2*sizeof(char));
     int postfix_num = 0;
     int postSize = 1;
     postfix[postfix_num++] = ' ';
-    postSize++;
-    postfix = (char*)realloc(postfix,postSize*sizeof(char));
+
     STACK *stack = create();
     for(int i = 0; i < strlen(infix); i++) {
-        if(isoper(infix[i])==1){
-            postfix[postfix_num++] = ' ';
-            postSize++;
-            postfix = (char*)realloc(postfix,postSize*sizeof(char));
-        }
-        if(infix[i] == '(')
-            push(stack,(int)infix[i]);
-        else if ((infix[i]=='+')||(infix[i]=='-')||(infix[i]=='/')||(infix[i]=='*')){
-            while(!empty(stack) && operand_priority(getval(stack))
-                                   >= operand_priority(infix[i]) && getval(stack)!='('){
-                postfix[postfix_num++] = pop(stack);
-                postSize++;
-                postfix = (char*)realloc(postfix,postSize*sizeof(char));
+        if(isoper(infix[i])){
+            if(i!=0 && postfix[postfix_num-1]!=' ')
                 postfix[postfix_num++] = ' ';
-                postSize++;
-                postfix = (char*)realloc(postfix,postSize*sizeof(char));
+            if(infix[i] == '(')
+                push(stack,(int)infix[i]);
+            else if(infix[i] == ')'){
+                while(!empty(stack) && getval(stack) != '('){
+                    postfix[postfix_num++] = pop(stack);
+                }
+                del(stack);
             }
-            push(stack,(int)infix[i]);
-        }
-        else if(infix[i] == ')'){
-            postfix[postfix_num++] = ' ';
-            postSize++;
-            postfix = (char*)realloc(postfix,postSize*sizeof(char));
-            while(!empty(stack) && getval(stack) != '('){
-                postfix[postfix_num++] = pop(stack);
-                postSize++;
-                postfix = (char*)realloc(postfix,postSize*sizeof(char));
-
+            else if ((infix[i]=='+')||(infix[i]=='-')||(infix[i]=='/')||(infix[i]=='*')){
+                while(!empty(stack) && operand_priority(getval(stack))
+                                       >= operand_priority(infix[i]) && getval(stack)!='('){
+                    postfix[postfix_num++] = pop(stack);
+                    postfix[postfix_num++] = ' ';
+                }
+                push(stack,(int)infix[i]);
             }
-            del(stack);
 
         }
         else{
             postfix[postfix_num++] = infix[i];
-            postSize++;
-            postfix = (char*)realloc(postfix,postSize*sizeof(char));
+
         }
 
+
     }
-    postfix = (char*)realloc(postfix,postSize*sizeof(char));
-    postfix[postfix_num++] = ' ';
-    postSize++;
+    int fl=0;
     while(!empty(stack)){
-        postfix[postfix_num++] = pop(stack);
-        postSize++;
-        postfix = (char*)realloc(postfix,postSize*sizeof(char));
-
+        fl = 1;
         postfix[postfix_num++] = ' ';
-        postSize++;
-        postfix = (char*)realloc(postfix,postSize*sizeof(char));
+        postfix[postfix_num++] = pop(stack);
     }
-
-
-
-    postfix = (char*)realloc(postfix,(postfix_num-1)*sizeof(char));
-    if(postfix[strlen(postfix)-1] == ' ' && !isoper(postfix[strlen(postfix)-2] ))
+    if (fl)
+        postfix[postfix_num++] = ' ';
+    //printf("%s",postfix);
+    int num = postfix_num;
+    //printf("%s %d",postfix,num);
+    while(postfix[postfix_num-1]!=' '&& postfix_num!=0 )
         postfix_num--;
-    postfix[postfix_num-1] = '\0';
+    //printf("%d",postfix_num);
+    if(postfix_num>1){
+        postfix[postfix_num-1] = '\0';
+        postfix = realloc(postfix,(postfix_num-1)*sizeof(char));
+    }
+    else {
+        postfix[num] = '\0';
+        postfix = realloc(postfix, (num) * sizeof(char));
+    }
     return postfix;
 }
 
@@ -206,14 +197,17 @@ void calculations(char *postfix){
     long long int result = 0;
     STACK *stack = create();
     for(int i = 0; i < strlen(postfix);i++){
-        if (postfix[i] == ' ' && !isoper(postfix[i+1])&& i!= strlen(postfix)){
+
+        if (postfix[i] == ' ' && !isoper(postfix[i+1])){
             char *s=split(postfix,i);
             int chis = ToInt(s);
+           // printf("%d\t",chis);
             push(stack, chis);
-            i = splitInd(postfix,i);
-            print(stack);
+            i = splitInd(postfix,i)-1;
+            //printf("i%d len%d \n",i, strlen(postfix));
+            //print(stack);
         }
-        else if(i != strlen(postfix)){
+        else {
 
             if(postfix[i]=='+'){
                 result = pop(stack) + pop(stack);
