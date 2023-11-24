@@ -85,14 +85,14 @@ int operand_priority(char symb){
     switch (symb) {
         case '+':
         case '-':
-            return 1;
+            return 3;
         case '*':
         case '/':
-            return 2;
-        case ')':
-            return 3;
-        case '(':
             return 4;
+        case ')':
+            return 2;
+        case '(':
+            return 1;
         default:
             return 0;
     }
@@ -115,7 +115,7 @@ char *split(char *str, int ind){
 
 int splitInd(char *str, int ind){
     int i = ind+1;
-    while (str[i] != ' '){
+    while (str[i] != ' ' && str[i]!='\0'){
         i++;
     }
     return i;
@@ -125,7 +125,6 @@ char* ToPostfix(char *infix){
     char *postfix;
     postfix = (char*)malloc(strlen(infix)*2*sizeof(char));
     int postfix_num = 0;
-    int postSize = 1;
     postfix[postfix_num++] = ' ';
 
     STACK *stack = create();
@@ -161,17 +160,18 @@ char* ToPostfix(char *infix){
     int fl=0;
     while(!empty(stack)){
         fl = 1;
-        postfix[postfix_num++] = ' ';
-        postfix[postfix_num++] = pop(stack);
+        if(postfix[postfix_num-1]!=' '){
+            postfix[postfix_num++] = ' ';
+            postfix[postfix_num++] = pop(stack);
+        }
+        else
+            postfix[postfix_num++] = pop(stack);
     }
-    if (fl)
+    if (fl||postfix[postfix_num]!=' ')
         postfix[postfix_num++] = ' ';
-    //printf("%s",postfix);
     int num = postfix_num;
-    //printf("%s %d",postfix,num);
-    while(postfix[postfix_num-1]!=' '&& postfix_num!=0 )
+    while(postfix[postfix_num-1]!=' ' && postfix_num!=0)
         postfix_num--;
-    //printf("%d",postfix_num);
     if(postfix_num>1){
         postfix[postfix_num-1] = '\0';
         postfix = realloc(postfix,(postfix_num-1)*sizeof(char));
@@ -190,22 +190,18 @@ int ToInt(char *str) {
         int digit = str[i] - '0';
         res += digit * pow(10, length - 1 - i);
     }
-
     return res;
 }
 void calculations(char *postfix){
     long long int result = 0;
     STACK *stack = create();
     for(int i = 0; i < strlen(postfix);i++){
-
         if (postfix[i] == ' ' && !isoper(postfix[i+1])){
             char *s=split(postfix,i);
             int chis = ToInt(s);
-           // printf("%d\t",chis);
-            push(stack, chis);
+            if (chis!=0)
+                push(stack, chis);
             i = splitInd(postfix,i)-1;
-            //printf("i%d len%d \n",i, strlen(postfix));
-            //print(stack);
         }
         else {
 
@@ -234,7 +230,6 @@ void calculations(char *postfix){
                     result =  first / last;
                     push(stack,result);
                 }
-
             }
         }
     }
@@ -247,7 +242,6 @@ int main() {
     SynErr(infix);
     divBy0(infix);
     char *postfix = ToPostfix(infix);
-    //printf("%s\n", postfix);
     calculations(postfix);
     return 0;
 }
