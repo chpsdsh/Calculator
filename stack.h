@@ -5,7 +5,7 @@
 #include <malloc.h>
 
 STACK{
-    char value;
+    int value;
     STACK *next;
 };
 
@@ -17,7 +17,7 @@ STACK* create(){
     return Telem;
 }
 
-void push(STACK *S, char value){
+void push(STACK *S, int value){
     STACK *first = S->next;
     STACK *elem;
     elem = (STACK*)malloc(sizeof(STACK));
@@ -42,7 +42,8 @@ int empty(STACK*S){//проверка на пустоту
     else
         return 1;
 }
-char getval(STACK *S){
+
+int getval(STACK *S){
     STACK *frst = S->next;
     return frst->value;
 }
@@ -55,9 +56,9 @@ void del(STACK *S){
     }
 }
 
-char pop(STACK *S){
+int pop(STACK *S){
     STACK *first = S->next;
-    char val = first->value;
+    int val = first->value;
     if(!empty(S)){
         S->next = first->next;
         free(first);
