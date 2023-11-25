@@ -4,12 +4,14 @@
 #include <stdio.h>
 #include <malloc.h>
 
+
 STACK{
     int value;
     STACK *next;
 };
 
-STACK* create(){
+
+STACK* create(){//creates stack wit terminal element
     STACK *Telem;
     Telem = (STACK*)malloc(sizeof(STACK));
     Telem->value = 0;
@@ -17,7 +19,8 @@ STACK* create(){
     return Telem;
 }
 
-void push(STACK *S, int value){
+
+void push(STACK *S, int value){//pushes value into stack
     STACK *first = S->next;
     STACK *elem;
     elem = (STACK*)malloc(sizeof(STACK));
@@ -26,7 +29,8 @@ void push(STACK *S, int value){
     S->next = elem;
 }
 
-void print(STACK *S){
+
+void print(STACK *S){//prints stack
     STACK *ptr = S-> next;
     while (ptr != NULL){
         printf("%d\n",ptr->value);
@@ -34,19 +38,22 @@ void print(STACK *S){
     }
 }
 
-int empty(STACK*S){//проверка на пустоту
+
+int empty(STACK*S){//checking if stack is empty
     if(S->next)
         return 0;
     else
         return 1;
 }
 
-int getval(STACK *S){
+
+int getval(STACK *S){//gets value of stack element
     STACK *frst = S->next;
     return frst->value;
 }
 
-void del(STACK *S){
+
+void del(STACK *S){//deletes first element in stack
     STACK *first = S->next;
     if(!empty(S)) {
         S->next = first->next;
@@ -54,7 +61,8 @@ void del(STACK *S){
     }
 }
 
-int pop(STACK *S){
+
+int pop(STACK *S){//deletes and returns value of first element in stack
     STACK *first = S->next;
     int val = first->value;
     if(!empty(S)){
